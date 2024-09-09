@@ -1,0 +1,12 @@
+================================
+Account Geeksfarm
+Email	: raha.sovereign@gmail.com
+Pass	: progenitorgt2_
+
+vscode
+git
+nodejs
+postgresql
+
+Javascript
+JSON
