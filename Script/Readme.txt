@@ -1,0 +1,1 @@
+Latihan 02 - membuat 3 pertanyaan yang disimpan didalam "test.txt" dan di upload ke github
