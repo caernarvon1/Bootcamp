@@ -1,2 +1,5 @@
-nama kamu adalah Raha, 
-nomor telp kamu adalah 08211034011, email kamu adalah raha.sovereign@gmail.com
+{
+  "answer": "Raha",
+  "answer1": "082115034011",
+  "answer2": "raha.sovereigng@gmail.com"
+}
