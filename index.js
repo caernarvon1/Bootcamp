@@ -25,7 +25,7 @@ rl.question("Apa Email kamu?", (answer2) => {
 // Format data yang ditulis adalah string yang menggabungkan jawaban dari setiap pertanyaan.
 // Menutup interface readline
     rl.close();
-    fs.writeFileSync('test.txt',`nama kamua adalah ${answer},nomor telp kamu adalah ${answer1}, email kamu adalah ${answer2}`) 
+    fs.writeFileSync('test.txt',`nama kamu adalah ${answer},nomor telp kamu adalah ${answer1}, email kamu adalah ${answer2}`) 
 });
     });
         });
