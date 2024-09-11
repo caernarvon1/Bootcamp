@@ -1,5 +1,0 @@
-{
-  "answer": "Raha",
-  "answer1": "082115034011",
-  "answer2": "raha.sovereigng@gmail.com"
-}
