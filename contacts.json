@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "name": "XZ",
+    "phone": "08211231122",
+    "email": "g@gmail.com"
+  },
+  {
+    "name": "Tugas",
+    "phone": "0821122111",
+    "email": "h@gmail.com"
+  },
+  {
+    "name": "hoam",
+    "phone": "08211239211",
+    "email": "r@gmail.com"
+  }
+]
