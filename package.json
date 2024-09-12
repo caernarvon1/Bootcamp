@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app",
     "fol": "ls",
-    "push": "git add . && git commit -m 'updatehariketiga' && git push",
+    "push": "git add . && git commit -m 'updateharikeempat' && git push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Rahadian",
