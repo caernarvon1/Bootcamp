@@ -1,90 +1,88 @@
-const fs = require('fs'); // Modul untuk membaca dan menulis file
-const yargs = require('yargs'); // Modul untuk mengambil input dari command line
-const validator = require('validator'); // Modul untuk memvalidasi input (seperti email, nomor telepon)
+// Mengimpor modul yang diperlukan
+const fs = require('fs'); // Modul untuk operasi file
+const yargs = require('yargs'); // Modul untuk menangani argumen command line
+const validator = require('validator'); // Modul untuk validasi data
 
-// Fungsi untuk membaca, memeriksa duplikat, dan menyimpan data ke file
+// Fungsi untuk menyimpan data kontak ke file
 function saveContact(newData, filePath) {
     let contacts = [];
-
-    // Coba baca file JSON jika ada
+    
+    // Mencoba membaca file jika ada
     try {
-        const data = fs.readFileSync(filePath, "utf-8");
-        contacts = JSON.parse(data); // Ubah data JSON menjadi array
+        const data = fs.readFileSync(filePath, "utf-8"); // Baca isi file
+        contacts = JSON.parse(data); // Mengubah isi file JSON menjadi objek JavaScript
     } catch (error) {
-        console.log("File tidak ditemukan atau kosong. Membuat file baru.");
+        console.log("File tidak ditemukan atau kosong. Membuat file baru."); // Jika file tidak ada, beri pesan
     }
 
-    // Periksa apakah data sudah ada
-    const isDuplicate = contacts.some(contact =>
-        contact.name === newData.name || contact.phone === newData.phone || contact.email === newData.email
+    // Memeriksa apakah email sudah ada dalam data
+    const isDuplicate = contacts.some(contact => 
+        contact.email === newData.email // Cek apakah email sudah ada
     );
 
     if (isDuplicate) {
-        console.log("Kontak dengan nama, nomor telepon, atau email tersebut sudah ada.");
-        return; // Jika ada duplikat, batalkan penyimpanan
+        console.log("Email sudah ada dalam file."); // Jika duplikat, beri pesan
+        return; // Keluar dari fungsi
     }
 
-    // Tambahkan data baru ke array
+    // Menambahkan data baru ke dalam array kontak
     contacts.push(newData);
 
-    // Simpan data kembali ke file JSON
+    // Menyimpan kembali data ke file JSON
     try {
-        fs.writeFileSync(filePath, JSON.stringify(contacts, null, 2)); // Simpan dalam format JSON yang rapi
-        console.log("Data berhasil disimpan.");
+        fs.writeFileSync(filePath, JSON.stringify(contacts, null, 2)); // Menulis data ke file dengan format yang rapi
+        console.log("Data berhasil disimpan."); // Beri pesan jika berhasil
     } catch (error) {
-        console.log("Error saat menulis file:", error);
+        console.log("Error saat menulis file:", error); // Beri pesan jika ada kesalahan saat menulis file
     }
 }
 
-// Mengatur perintah 'add' untuk menambahkan kontak baru dari command line
-yargs.command({
-    command: 'add',
-    describe: 'Menambahkan kontak baru',
-    builder: {
-        // Opsi untuk nama
+// Mengatur yargs untuk menangani command line arguments
+const argv = yargs
+    .command('add', 'Menambahkan kontak baru', {
         name: {
-            describe: 'Nama kontak',
-            demandOption: true, // Wajib diisi
-            type: 'string' // Harus berupa string
+            description: 'Nama kontak', // Deskripsi untuk nama
+            alias: 'n', // Alias untuk nama
+            type: 'string', // Tipe data adalah string
+            demandOption: true // Nama harus ada
         },
-        // Opsi untuk nomor telepon
         phone: {
-            describe: 'Nomor HP',
-            demandOption: true, // Wajib diisi
-            type: 'string' // Harus berupa string
+            description: 'Nomor HP kontak', // Deskripsi untuk nomor HP
+            alias: 'p', // Alias untuk nomor HP
+            type: 'string', // Tipe data adalah string
+            demandOption: true // Nomor HP harus ada
         },
-        // Opsi untuk email
         email: {
-            describe: 'Email',
-            demandOption: true, // Wajib diisi
-            type: 'string' // Harus berupa string
+            description: 'Email kontak', // Deskripsi untuk email
+            alias: 'e', // Alias untuk email
+            type: 'string' // Tipe data adalah string
         }
-    },
-    handler(argv) {
-        const { name, phone, email } = argv;
+    })
+    .help() // Menyediakan bantuan
+    .alias('help', 'h') // Alias untuk bantuan
+    .argv; // Mengambil argumen
 
-        // Validasi nama hanya berisi huruf
-        if (!validator.isAlpha(name, 'en-US', { ignore: ' ' })) {
-            console.log("Nama hanya boleh berisi huruf dan tidak boleh kosong.");
-            return;
-        }
+// Validasi dan pemrosesan input jika perintah 'add' digunakan
+if (argv._.includes('add')) {
+    const { name, phone, email } = argv; // Mendapatkan nilai dari argumen
 
-        // Validasi nomor HP sesuai format Indonesia
-        if (!validator.isMobilePhone(phone, 'id-ID')) {
-            console.log("Nomor HP tidak valid.");
-            return;
-        }
-
-        // Validasi email
-        if (!validator.isEmail(email)) {
-            console.log("Email tidak valid.");
-            return;
-        }
-
-        // Jika semua validasi sukses, simpan kontak baru
-        const newContact = { name, phone, email };
-        saveContact(newContact, "contacts.json"); // Simpan ke file contacts.json
+    // Validasi nama
+    if (!validator.isAlpha(name)) {
+        console.log("Nama hanya boleh berisi huruf dan tidak boleh kosong."); // Pesan jika nama tidak valid
+        process.exit(1); // Keluar dari proses dengan status gagal
     }
-});
 
-yargs.parse(); // Proses input dari command line
+    // Validasi nomor HP
+    if (!validator.isMobilePhone(phone, 'id-ID')) {
+        console.log("Nomor HP tidak valid."); // Pesan jika nomor HP tidak valid
+        process.exit(1); // Keluar dari proses dengan status gagal
+    }
+
+    // Validasi email, jika tidak ada, set menjadi "email tidak ada"
+    const validEmail = email && validator.isEmail(email) ? email : "email tidak ada";
+
+    // Membuat objek kontak baru
+    const newContact = { name, phone, email: validEmail };
+    // Menyimpan kontak baru ke file
+    saveContact(newContact, "contacts.json");
+}
