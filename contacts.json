@@ -1,87 +1,32 @@
 [
   {
-    "name": "Alex",
-    "phone": "082114030222",
-    "email": "g@mail.com"
-  },
-  {
-    "name": "jack",
-    "phone": "08229491222",
-    "email": "j@gmail.com"
-  },
-  {
-    "name": "John",
-    "phone": "08211024022",
-    "email": "h@gmail.com"
-  },
-  {
     "name": "Asep",
     "phone": "08211040211",
     "email": "j@gmail.com"
   },
   {
-    "name": "Ujang",
-    "phone": "08211040222",
-    "email": "X@gmail.com"
+    "name": "Nuasep",
+    "phone": "0821104021",
+    "email": "sj@gmail.com"
   },
   {
-    "name": "aman",
-    "phone": "082110403332",
-    "email": "poiX@gmail.com"
+    "name": "ra",
+    "phone": "0821182022",
+    "email": "r@gmail.com"
   },
   {
-    "name": "note",
-    "phone": "08211040123",
-    "email": "v@gmail.com"
-  },
-  {
-    "name": "Alice",
-    "phone": "08123456701",
-    "email": "alice@example.com"
-  },
-  {
-    "name": "Bob",
-    "phone": "08123456702",
-    "email": "bob@example.com"
-  },
-  {
-    "name": "Charlie",
-    "phone": "08123456703",
-    "email": "charlie@example.com"
-  },
-  {
-    "name": "David",
-    "phone": "08123456704",
-    "email": "david@example.com"
-  },
-  {
-    "name": "Eve",
-    "phone": "08123456705",
-    "email": "eve@example.com"
-  },
-  {
-    "name": "Frank",
-    "phone": "08123456706",
-    "email": "frank@example.com"
-  },
-  {
-    "name": "Ivy",
-    "phone": "08123456709",
-    "email": "ivy@example.com"
-  },
-  {
-    "name": "Jack",
-    "phone": "08123456710",
-    "email": "jack@example.com"
-  },
-  {
-    "name": "Asep",
-    "phone": "08211040211",
+    "name": "Nuasep",
+    "phone": "08211040212",
     "email": "j@gmail.com"
   },
   {
-    "name": "Asep",
-    "phone": "08211040211",
-    "email": "j@gmail.com"
+    "name": "Nuasep",
+    "phone": "08211040212",
+    "email": "a@gmail.com"
+  },
+  {
+    "name": "Nuasep",
+    "phone": "08211040212",
+    "email": "x@gmail.com"
   }
 ]
