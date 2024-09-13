@@ -15,13 +15,15 @@ function saveContact(newData, filePath) {
         console.log("File tidak ditemukan atau kosong. Membuat file baru."); // Jika file tidak ada, beri pesan
     }
 
-    // Memeriksa apakah email sudah ada dalam data
+    // Memeriksa apakah nama, nomor telepon, atau email sudah ada dalam data
     const isDuplicate = contacts.some(contact => 
-        contact.email === newData.email // Cek apakah email sudah ada
+        contact.name === newData.name || 
+        contact.phone === newData.phone || 
+        contact.email === newData.email
     );
 
     if (isDuplicate) {
-        console.log("Email sudah ada dalam file."); // Jika duplikat, beri pesan
+        console.log("Kontak dengan nama, nomor telepon, atau email tersebut sudah ada."); // Pesan jika ada duplikasi
         return; // Keluar dari fungsi
     }
 
@@ -67,7 +69,7 @@ if (argv._.includes('add')) {
     const { name, phone, email } = argv; // Mendapatkan nilai dari argumen
 
     // Validasi nama
-    if (!validator.isAlpha(name)) {
+    if (!validator.isAlpha(name, 'en-US', {ignore: ' '})) { 
         console.log("Nama hanya boleh berisi huruf dan tidak boleh kosong."); // Pesan jika nama tidak valid
         process.exit(1); // Keluar dari proses dengan status gagal
     }
@@ -83,6 +85,7 @@ if (argv._.includes('add')) {
 
     // Membuat objek kontak baru
     const newContact = { name, phone, email: validEmail };
+
     // Menyimpan kontak baru ke file
     saveContact(newContact, "contacts.json");
 }
