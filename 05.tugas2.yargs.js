@@ -1,76 +1,79 @@
-const fs = require('fs');
-const yargs = require('yargs');
-const validator = require('validator'); // Import validator
+const fs = require('fs'); // Modul untuk membaca dan menulis file
+const yargs = require('yargs'); // Modul untuk mengambil input dari command line
+const validator = require('validator'); // Modul untuk memvalidasi input (seperti email, nomor telepon)
 
-// Fungsi gabungan untuk membaca, menggabungkan, dan menulis data
+// Fungsi untuk membaca, menggabungkan, dan menulis data ke file
 function saveContact(newData, filePath) {
     let contacts = [];
     
-    // Coba baca file jika ada, jika tidak, buat array baru kosong
+    // Coba baca file JSON jika ada
     try {
         const data = fs.readFileSync(filePath, "utf-8");
-        contacts = JSON.parse(data); // Parse data JSON dari file
+        contacts = JSON.parse(data); // Mengubah data JSON menjadi array
     } catch (error) {
         console.log("File tidak ditemukan atau kosong. Membuat file baru.");
     }
 
-    // Tambahkan data baru ke array contacts yang sudah ada
+    // Tambahkan data baru ke array contacts
     contacts.push(newData);
 
-    // Tulis kembali ke file JSON dengan data yang sudah diperbarui
+    // Tulis kembali array contacts ke dalam file JSON
     try {
-        fs.writeFileSync(filePath, JSON.stringify(contacts, null, 2)); // null, 2 untuk membuat format JSON rapi
+        fs.writeFileSync(filePath, JSON.stringify(contacts, null, 2)); // Simpan dalam format JSON rapi
         console.log("Data berhasil disimpan.");
     } catch (error) {
         console.log("Error saat menulis file:", error);
     }
 }
 
-// Konfigurasi yargs untuk mengambil input dari command line
+// Mengatur perintah 'add' untuk menambahkan kontak baru melalui command line
 yargs.command({
     command: 'add',
     describe: 'Menambahkan kontak baru',
     builder: {
+        // Opsi untuk nama
         name: {
             describe: 'Nama kontak',
-            demandOption: true,
-            type: 'string'
+            demandOption: true, // Wajib diisi
+            type: 'string' // Harus berupa string
         },
+        // Opsi untuk nomor telepon
         phone: {
             describe: 'Nomor HP',
-            demandOption: true,
-            type: 'string'
+            demandOption: true, // Wajib diisi
+            type: 'string' // Harus berupa string
         },
+        // Opsi untuk email
         email: {
             describe: 'Email',
-            demandOption: true,
-            type: 'string'
+            demandOption: true, // Wajib diisi
+            type: 'string' // Harus berupa string
         }
     },
     handler(argv) {
         const { name, phone, email } = argv;
 
-        // Validasi nama
+        // Validasi apakah nama hanya berisi huruf
         if (!validator.isAlpha(name, 'en-US', { ignore: ' ' })) {
             console.log("Nama hanya boleh berisi huruf dan tidak boleh kosong.");
             return;
         }
 
-        // Validasi nomor HP
+        // Validasi apakah nomor HP sesuai dengan format Indonesia
         if (!validator.isMobilePhone(phone, 'id-ID')) {
             console.log("Nomor HP tidak valid.");
             return;
         }
 
-        // Validasi email
+        // Validasi apakah email valid
         if (!validator.isEmail(email)) {
             console.log("Email tidak valid.");
             return;
         }
 
-        // Jika semua input valid, gabungkan data dan simpan ke file JSON
+        // Jika semua validasi sukses, buat objek kontak baru dan simpan
         const newContact = { name, phone, email };
-        saveContact(newContact, "contacts.json");
+        saveContact(newContact, "contacts.json"); // Simpan ke file contacts.json
     }
 });
 
