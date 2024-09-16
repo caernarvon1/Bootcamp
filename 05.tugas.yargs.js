@@ -55,11 +55,11 @@ yargs.command({
             demandOption: true, // Wajib diisi
             type: 'string' // Harus berupa string
         },
-        // Opsi untuk email
+        // Opsi untuk email (opsional)
         email: {
-            describe: 'Email',
-            demandOption: true, // Wajib diisi
-            type: 'string' // Harus berupa string
+            describe: 'Email (opsional)',
+            demandOption: false, // Tidak wajib diisi
+            type: 'string' // Harus berupa string jika diisi
         }
     },
     handler(argv) {
@@ -77,14 +77,19 @@ yargs.command({
             return;
         }
 
-        // Validasi apakah email valid
-        if (!validator.isEmail(email)) {
+        // Jika email diisi, maka validasi email
+        if (email && !validator.isEmail(email)) {
             console.log("Email tidak valid.");
             return;
         }
 
         // Jika semua validasi sukses, buat objek kontak baru dan simpan
-        const newContact = { name, phone, email };
+        const newContact = { 
+            name, 
+            phone, 
+            email: email || "tidak tersedia" // Jika email tidak diisi, set ke "tidak tersedia"
+        };
+
         saveContact(newContact, "contacts.json"); // Simpan ke file contacts.json
     }
 });
