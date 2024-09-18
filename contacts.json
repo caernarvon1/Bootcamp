@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "name": "Tavish",
+    "phone": "08211040214",
+    "email": "ajaib@gmail.com"
+  },
+  {
+    "name": "Jonathan Doe",
+    "phone": "08211040213",
+    "email": "coba@gmail.com"
+  },
+  {
+    "name": "Captain John",
+    "phone": "08211942044",
+    "email": "jonathan@example.com"
+  }
+]
