@@ -8,10 +8,9 @@ app.set("view engine", "ejs");
 
 // Mengirim file index.html ketika route '/' diakses
 app.get("/", (req, res) => {
-    const nama = "Asep";
-    const title = "Homepage"; 
-    res.render("index", { nama, title });
+    res.render("index"); // Asumsi ada file 'index.ejs', 'index.pug', atau sesuai dengan template engine yang kamu gunakan
 });
+
 
 // Mengirim file about.html ketika route '/about' diakses
 app.get("/about", (req, res) => {
@@ -27,7 +26,6 @@ app.get("/contact", (req, res) => {
         res.render("contact", { contacts });
     });
 });
-
 
 // Middleware untuk menangani rute yang tidak ada (404)
 app.use((req, res) => {
