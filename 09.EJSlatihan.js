@@ -18,21 +18,16 @@ app.get("/about", (req, res) => {
     res.render("about", { title: "About Us" });
 });
 
-// Route for the contact page
 app.get("/contact", (req, res) => {
-    fs.readFile(path.join(__dirname, "..", "contacts.json"), "utf8", (err, data) => {
+    fs.readFile(path.join(__dirname, "contacts.json"), "utf8", (err, data) => {
         if (err) {
             return res.status(500).send("Error reading contact data.");
         }
-        let contacts;
-        try {
-            contacts = JSON.parse(data); // Parsing JSON data
-        } catch (parseErr) {
-            return res.status(500).send("Error parsing contact data.");
-        }
-        res.render("contact", { contacts }); // Kirim variabel 'contacts' ke template
+        const contacts = JSON.parse(data);
+        res.render("contact", { contacts });
     });
 });
+
 
 // Middleware untuk menangani rute yang tidak ada (404)
 app.use((req, res) => {
