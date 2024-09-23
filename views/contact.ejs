@@ -1,6 +1,3 @@
-<%- include('layout/header', { title: 'Contact Us' }) %>
-<%- include('layout/nav') %>
-
 <main class="container mt-4">
     <h2>Contact Us</h2>
     <p>If you have any questions, feel free to reach out to us.</p>
@@ -9,7 +6,7 @@
             <% contacts.forEach(contact => { %>
                 <li class="list-group-item">
                     <strong>Name:</strong> <%= contact.name %> <br>
-                    <strong>Email:</strong> <%= contact.email %> <br>
+                    <strong>Email:</strong> <%= contact.email || 'N/A' %> <br>
                     <strong>Phone:</strong> <%= contact.phone %>
                 </li>
             <% }); %>
@@ -18,5 +15,3 @@
         <% } %>
     </ul>
 </main>
-
-<%- include('layout/footer') %>

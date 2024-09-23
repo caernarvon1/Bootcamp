@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Include header -->
+    <%- include('header') %>
+
+    <!-- Include navigation --> 
+    <%- include('nav') %>
+
+    <!-- Konten halaman -->
+    <main class="container mt-4">
+        <%- body %> <!-- Konten dari halaman yang dirender akan masuk di sini -->
+    </main>
+
+    <!-- Include footer -->
+    <%- include('footer') %>
+</body>
+</html>
