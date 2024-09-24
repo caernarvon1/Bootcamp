@@ -1,10 +1,10 @@
 <main class="container mt-4">
     <h2>Contact Us</h2> <!-- Judul halaman -->
     <p>If you have any questions, feel free to reach out to us.</p> <!-- Petunjuk untuk pengguna -->
-    <button onclick="showAddContactForm()" class="btn btn-primary mb-3">Tambah Kontak</button> <!-- Tombol untuk menampilkan form tambah kontak -->
+    <button onclick="showAddContactForm()" class="btn btn-primary mb-3">Add Contact</button> <!-- Tombol untuk menampilkan form tambah kontak -->
     
     <div id="addContactForm" style="display: none; margin-bottom: 20px;"> <!-- Form tambah kontak yang disembunyikan secara default -->
-        <form action="/add-contact" method="POST" onsubmit="return validateContactForm(event, 'newName', 'newPhone')"> <!-- Form yang memvalidasi input sebelum dikirim -->
+        <form action="/add-contact" method="POST" onsubmit="return validateContactForm(event, 'newName', 'newPhone', 'newEmail')"> <!-- Form yang memvalidasi input sebelum dikirim -->
             <div>
                 <label for="newName">Name:</label> <!-- Label untuk input nama -->
                 <input type="text" id="newName" name="name" required> <!-- Input untuk nama -->
@@ -18,6 +18,7 @@
             <div>
                 <label for="newEmail">Email:</label> <!-- Label untuk input email -->
                 <input type="email" id="newEmail" name="email"> <!-- Input untuk email -->
+                <div id="emailError" class="text-danger" style="display: none;">Email is not valid.</div> <!-- Pesan kesalahan untuk email -->
             </div>
             <button type="submit" class="btn btn-success">Save</button> <!-- Tombol untuk menyimpan kontak -->
             <button type="button" class="btn btn-secondary" onclick="hideAddContactForm()">Cancel</button> <!-- Tombol untuk membatalkan dan menyembunyikan form -->
@@ -59,7 +60,7 @@
                     </div>
                     <div id="updateForm<%= index %>" style="display: none; margin-top: 10px;"> <!-- Form untuk memperbarui kontak yang disembunyikan -->
                         <div style="display: flex; align-items: center;"> <!-- Kontainer untuk form update -->
-                            <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;" onsubmit="return validateContactForm(event, 'name<%= index %>', 'phone<%= index %>')"> <!-- Validasi form update -->
+                            <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;" onsubmit="return validateContactForm(event, 'name<%= index %>', 'phone<%= index %>', 'email<%= index %>')"> <!-- Validasi form update -->
                                 <input type="hidden" name="index" value="<%= index %>"> <!-- Indeks kontak yang akan diperbarui -->
                                 <div>
                                     <label for="name<%= index %>">Name:</label> <!-- Label untuk input nama -->
@@ -74,6 +75,7 @@
                                 <div>
                                     <label for="email<%= index %>">Email:</label> <!-- Label untuk input email -->
                                     <input type="email" id="email<%= index %>" name="email" value="<%= contact.email || '' %>"> <!-- Input untuk email -->
+                                    <div id="emailError<%= index %>" class="text-danger" style="display: none;">Email is not valid.</div> <!-- Pesan kesalahan untuk email -->
                                 </div>
                                 <button type="submit" class="btn btn-success btn-sm">Save</button> <!-- Tombol untuk menyimpan perubahan -->
                             </form>
@@ -106,18 +108,23 @@
         document.getElementById("addContactForm").style.display = "none"; // Sembunyikan form
     }
 
-    function validateContactForm(event, nameFieldId, phoneFieldId) { // Fungsi untuk memvalidasi form kontak
+    function validateContactForm(event, nameFieldId, phoneFieldId, emailFieldId) { // Fungsi untuk memvalidasi form kontak
         const nameInput = document.getElementById(nameFieldId); // Ambil elemen input nama
         const phoneInput = document.getElementById(phoneFieldId); // Ambil elemen input telepon
+        const emailInput = document.getElementById(emailFieldId); // Ambil elemen input email
+        
         const nameError = document.getElementById("nameError" + (nameFieldId.includes("new") ? "" : nameFieldId.substring(nameFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk nama
         const phoneError = document.getElementById("phoneError" + (phoneFieldId.includes("new") ? "" : phoneFieldId.substring(phoneFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk telepon
+        const emailError = document.getElementById("emailError" + (emailFieldId.includes("new") ? "" : emailFieldId.substring(emailFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk email
 
         // Reset pesan kesalahan
         nameError.style.display = "none"; 
         phoneError.style.display = "none";
+        emailError.style.display = "none";
 
         const nameValue = nameInput.value; // Nilai input nama
         const phoneValue = phoneInput.value; // Nilai input telepon
+        const emailValue = emailInput.value; // Nilai input email
 
         // Validasi nama hanya mengandung huruf
         if (!/^[A-Za-z\s]+$/.test(nameValue)) { // Jika nama tidak valid
@@ -129,6 +136,13 @@
         // Validasi nomor telepon (harus berupa angka dan panjang 10-15)
         if (!/^\d{10,15}$/.test(phoneValue)) { // Jika nomor telepon tidak valid
             phoneError.style.display = "block"; // Tampilkan pesan kesalahan
+            event.preventDefault(); // Mencegah form submit jika ada kesalahan
+            return false; // Kembali false
+        }
+
+        // Validasi email (jika diisi)
+        if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) { // Jika email tidak valid
+            emailError.style.display = "block"; // Tampilkan pesan kesalahan
             event.preventDefault(); // Mencegah form submit jika ada kesalahan
             return false; // Kembali false
         }
