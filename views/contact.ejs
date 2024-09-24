@@ -24,72 +24,70 @@
             <button type="button" class="btn btn-secondary" onclick="hideAddContactForm()">Cancel</button> <!-- Tombol untuk membatalkan dan menyembunyikan form -->
         </form>
     </div>
-
-    <ul class="list-group"> <!-- Daftar kontak -->
-        <% if (contacts && contacts.length > 0) { %> <!-- Cek apakah ada kontak -->
-            <% contacts.forEach((contact, index) => { %> <!-- Iterasi melalui setiap kontak -->
-                <li class="list-group-item"> <!-- Item daftar kontak -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;"> <!-- Kontainer untuk nama dan telepon -->
-                        <div style="flex: 1; margin-right: 20px;"> <!-- Flexbox untuk menata tampilan -->
+    <ul class="list-group">
+        <% if (contacts && contacts.length > 0) { %>
+            <% contacts.forEach((contact, index) => { %>
+                <li class="list-group-item">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1; margin-right: 20px;">
+                            <!-- Tampilkan detail kontak -->
                             <div>
-                                <strong>Name:</strong> <span><%= contact.name %></span> <!-- Menampilkan nama kontak -->
+                                <strong>Name:</strong> <span><%= contact.name %></span>
                             </div>
                             <div>
-                                <strong>Phone:</strong> <span><%= contact.phone %></span> <!-- Menampilkan nomor telepon kontak -->
+                                <strong>Phone:</strong> <span><%= contact.phone %></span>
                             </div>
-                            <div id="details<%= index %>" style="display: none;"> <!-- Detail kontak yang disembunyikan -->
-                                <strong>Email:</strong> <span><%= contact.email || 'tidak tersedia' %></span> <!-- Menampilkan email atau pesan jika tidak ada -->
+                            <div id="details<%= index %>" style="display: none;">
+                                <strong>Email:</strong> <span><%= contact.email || 'tidak tersedia' %></span>
                             </div>
                         </div>
-                        <div style="flex-shrink: 0; display: flex; gap: 5px;"> <!-- Kontainer untuk tombol aksi -->
-                            <button 
-                                onclick="toggleDetails('details<%= index %>')" 
-                                class="btn btn-info btn-sm">
-                                Detail
-                            </button>
-                            <button 
-                                onclick="showUpdateForm(<%= index %>)" 
-                                class="btn btn-warning btn-sm">
-                                Update
-                            </button>
-                            <form action="/delete-contact" method="POST" style="display:inline;"> <!-- Form untuk menghapus kontak -->
-                                <input type="hidden" name="index" value="<%= index %>"> <!-- Indeks kontak yang akan dihapus -->
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button> <!-- Tombol untuk menghapus kontak -->
+                        <div style="flex-shrink: 0; display: flex; gap: 5px;">
+                            <!-- Tombol aksi -->
+                            <button onclick="toggleDetails('details<%= index %>')" class="btn btn-info btn-sm">Detail</button>
+                            <button onclick="showUpdateForm(<%= index %>)" class="btn btn-warning btn-sm">Update</button>
+                            <form action="/delete-contact" method="POST" style="display:inline;" onsubmit="return confirmDelete()"> <!-- Konfirmasi delete -->
+                                <input type="hidden" name="index" value="<%= index %>">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </div>
                     </div>
-                    <div id="updateForm<%= index %>" style="display: none; margin-top: 10px;"> <!-- Form untuk memperbarui kontak yang disembunyikan -->
-                        <div style="display: flex; align-items: center;"> <!-- Kontainer untuk form update -->
-                            <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;" onsubmit="return validateContactForm(event, 'name<%= index %>', 'phone<%= index %>', 'email<%= index %>')"> <!-- Validasi form update -->
-                                <input type="hidden" name="index" value="<%= index %>"> <!-- Indeks kontak yang akan diperbarui -->
+                    <div id="updateForm<%= index %>" style="display: none; margin-top: 10px;">
+                        <div style="display: flex; align-items: center;">
+                            <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;" onsubmit="return validateContactForm(event, 'name<%= index %>', 'phone<%= index %>', 'email<%= index %>')">
+                                <input type="hidden" name="index" value="<%= index %>">
                                 <div>
-                                    <label for="name<%= index %>">Name:</label> <!-- Label untuk input nama -->
-                                    <input type="text" id="name<%= index %>" name="name" value="<%= contact.name %>" required> <!-- Input untuk nama kontak -->
-                                    <div id="nameError<%= index %>" class="text-danger" style="display: none;">Name must contain only letters.</div> <!-- Pesan kesalahan untuk nama -->
+                                    <label for="name<%= index %>">Name:</label>
+                                    <input type="text" id="name<%= index %>" name="name" value="<%= contact.name %>" required>
+                                    <div id="nameError<%= index %>" class="text-danger" style="display: none;">Name must contain only letters.</div>
                                 </div>
                                 <div>
-                                    <label for="phone<%= index %>">Phone:</label> <!-- Label untuk input telepon -->
-                                    <input type="text" id="phone<%= index %>" name="phone" value="<%= contact.phone %>" required> <!-- Input untuk nomor telepon -->
-                                    <div id="phoneError<%= index %>" class="text-danger" style="display: none;">Phone number is not valid.</div> <!-- Pesan kesalahan untuk telepon -->
+                                    <label for="phone<%= index %>">Phone:</label>
+                                    <input type="text" id="phone<%= index %>" name="phone" value="<%= contact.phone %>" required>
+                                    <div id="phoneError<%= index %>" class="text-danger" style="display: none;">Phone number is not valid.</div>
                                 </div>
                                 <div>
-                                    <label for="email<%= index %>">Email:</label> <!-- Label untuk input email -->
-                                    <input type="email" id="email<%= index %>" name="email" value="<%= contact.email || '' %>"> <!-- Input untuk email -->
-                                    <div id="emailError<%= index %>" class="text-danger" style="display: none;">Email is not valid.</div> <!-- Pesan kesalahan untuk email -->
+                                    <label for="email<%= index %>">Email:</label>
+                                    <input type="email" id="email<%= index %>" name="email" value="<%= contact.email || '' %>">
+                                    <div id="emailError<%= index %>" class="text-danger" style="display: none;">Email is not valid.</div>
                                 </div>
-                                <button type="submit" class="btn btn-success btn-sm">Save</button> <!-- Tombol untuk menyimpan perubahan -->
+                                <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="hideUpdateForm(<%= index %>)">Cancel</button> <!-- Tombol Cancel -->
                             </form>
                         </div>
                     </div>
                 </li>
             <% }); %>
         <% } else { %>
-            <li class="list-group-item">No contacts available.</li> <!-- Pesan jika tidak ada kontak -->
+            <li class="list-group-item">No contacts available.</li>
         <% } %>
     </ul>
 </main>
 
 <script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this contact?");
+    }
+
     function toggleDetails(detailId) { // Fungsi untuk menampilkan/menyembunyikan detail kontak
         var details = document.getElementById(detailId);
         details.style.display = details.style.display === "none" || details.style.display === "" ? "block" : "none"; // Toggle detail
@@ -106,6 +104,11 @@
 
     function hideAddContactForm() { // Fungsi untuk menyembunyikan form tambah kontak
         document.getElementById("addContactForm").style.display = "none"; // Sembunyikan form
+    }
+
+    function hideUpdateForm(index) { // Fungsi untuk menyembunyikan form update kontak
+        var form = document.getElementById("updateForm" + index);
+        form.style.display = "none"; // Sembunyikan form
     }
 
     function validateContactForm(event, nameFieldId, phoneFieldId, emailFieldId) { // Fungsi untuk memvalidasi form kontak
