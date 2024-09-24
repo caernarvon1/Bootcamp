@@ -3,11 +3,22 @@
     <p>If you have any questions, feel free to reach out to us.</p>
     <ul class="list-group">
         <% if (contacts && contacts.length > 0) { %>
-            <% contacts.forEach(contact => { %>
+            <% contacts.forEach((contact, index) => { %>
                 <li class="list-group-item">
-                    <strong>Name:</strong> <%= contact.name %> <br>
-                    <strong>Email:</strong> <%= contact.email || 'N/A' %> <br>
-                    <strong>Phone:</strong> <%= contact.phone %>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>Name:</strong> <%= contact.name %> <br>
+                            <strong>Phone:</strong> <%= contact.phone %> <br>
+                            <div id="details<%= index %>" style="display: none;">
+                                <strong>Email:</strong> <%= contact.email || 'N/A' %>
+                            </div>
+                        </div>
+                        <button 
+                            onclick="toggleDetails('details<%= index %>')" 
+                            class="btn btn-info btn-sm">
+                            Detail
+                        </button>
+                    </div>
                 </li>
             <% }); %>
         <% } else { %>
@@ -15,3 +26,14 @@
         <% } %>
     </ul>
 </main>
+
+<script>
+    function toggleDetails(detailId) {
+        var details = document.getElementById(detailId);
+        if (details.style.display === "none" || details.style.display === "") {
+            details.style.display = "block"; // Tampilkan informasi email
+        } else {
+            details.style.display = "none"; // Sembunyikan informasi email
+        }
+    }
+</script>
