@@ -13,11 +13,17 @@
                                 <strong>Email:</strong> <%= contact.email || 'N/A' %>
                             </div>
                         </div>
-                        <button 
-                            onclick="toggleDetails('details<%= index %>')" 
-                            class="btn btn-info btn-sm">
-                            Detail
-                        </button>
+                        <div>
+                            <button 
+                                onclick="toggleDetails('details<%= index %>')" 
+                                class="btn btn-info btn-sm">
+                                Detail
+                            </button>
+                            <form action="/delete-contact" method="POST" style="display:inline;">
+                                <input type="hidden" name="index" value="<%= index %>">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 </li>
             <% }); %>
