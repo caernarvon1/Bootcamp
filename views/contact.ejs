@@ -1,35 +1,48 @@
 <main class="container mt-4">
     <h2>Contact Us</h2>
     <p>If you have any questions, feel free to reach out to us.</p>
-    
+
+    <!-- Form Pencarian -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by Name or Phone" oninput="searchContacts()">
+    </div>
+
     <!-- Tombol untuk menampilkan/menyembunyikan form tambah kontak -->
     <button id="toggleContactButton" onclick="toggleAddContactForm()" class="btn btn-primary mb-3">Add Contact</button>
     
     <!-- Form tambah kontak yang disembunyikan secara default -->
     <div id="addContactForm" style="display: none; margin-bottom: 20px;">
         <form action="/add-contact" method="POST" onsubmit="return validateContactForm(event, 'newName', 'newPhone', 'newEmail')">
-            <div>
-                <label for="newName">Name:</label>
-                <input type="text" id="newName" name="name" required>
-                <div id="nameError" class="text-danger" style="display: none;">Name must contain only letters.</div>
-            </div>
-            <div>
-                <label for="newPhone">Phone:</label>
-                <input type="text" id="newPhone" name="phone" required>
-                <div id="phoneError" class="text-danger" style="display: none;">Phone number is not valid.</div>
-            </div>
-            <div>
-                <label for="newEmail">Email:</label>
-                <input type="email" id="newEmail" name="email">
-                <div id="emailError" class="text-danger" style="display: none;">Email is not valid.</div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="newName">Name:</label>
+                        <input type="text" id="newName" name="name" class="form-control" required>
+                        <div id="nameError" class="text-danger" style="display: none;">Name must contain only letters.</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="newPhone">Phone:</label>
+                        <input type="text" id="newPhone" name="phone" class="form-control" required>
+                        <div id="phoneError" class="text-danger" style="display: none;">Phone number is not valid.</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="newEmail">Email:</label>
+                        <input type="email" id="newEmail" name="email" class="form-control">
+                        <div id="emailError" class="text-danger" style="display: none;">Email is not valid.</div>
+                    </div>
+                </div>
             </div>
             <button type="submit" class="btn btn-success">Save</button>
             <button type="button" class="btn btn-secondary" onclick="toggleAddContactForm()">Cancel</button>
         </form>
     </div>
-    
+
     <!-- Daftar kontak -->
-    <ul class="list-group">
+    <ul id="contactList" class="list-group">
         <% if (contacts && contacts.length > 0) { %>
             <% contacts.forEach((contact, index) => { %>
                 <li class="list-group-item">
@@ -54,28 +67,36 @@
                         <div style="display: flex; align-items: center;">
                             <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;" onsubmit="return validateContactForm(event, 'name<%= index %>', 'phone<%= index %>', 'email<%= index %>')">
                                 <input type="hidden" name="index" value="<%= index %>">
-                                <div>
-                                    <label for="name<%= index %>">Name:</label>
-                                    <input type="text" id="name<%= index %>" name="name" value="<%= contact.name %>" required>
-                                    <div id="nameError<%= index %>" class="text-danger" style="display: none;">Name must contain only letters.</div>
-                                </div>
-                                <div>
-                                    <label for="phone<%= index %>">Phone:</label>
-                                    <input type="text" id="phone<%= index %>" name="phone" value="<%= contact.phone %>" required>
-                                    <div id="phoneError<%= index %>" class="text-danger" style="display: none;">Phone number is not valid.</div>
-                                </div>
-                                <div>
-                                    <label for="email<%= index %>">Email:</label>
-                                    <input type="email" id="email<%= index %>" name="email" value="<%= contact.email || '' %>">
-                                    <div id="emailError<%= index %>" class="text-danger" style="display: none;">Email is not valid.</div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="name<%= index %>">Name:</label>
+                                            <input type="text" id="name<%= index %>" name="name" class="form-control" value="<%= contact.name %>" required>
+                                            <div id="nameError<%= index %>" class="text-danger" style="display: none;">Name must contain only letters.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="phone<%= index %>">Phone:</label>
+                                            <input type="text" id="phone<%= index %>" name="phone" class="form-control" value="<%= contact.phone %>" required>
+                                            <div id="phoneError<%= index %>" class="text-danger" style="display: none;">Phone number is not valid.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="email<%= index %>">Email:</label>
+                                            <input type="email" id="email<%= index %>" name="email" class="form-control" value="<%= contact.email || '' %>">
+                                            <div id="emailError<%= index %>" class="text-danger" style="display: none;">Email is not valid.</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn btn-success btn-sm">Save</button>
-                                <button type="button" class="btn btn-secondary btn-sm" onclick="hideUpdateForm(<%= index %>)">Cancel</button> <!-- Tombol Cancel -->
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="hideUpdateForm(<%= index %>)">Cancel</button>
                             </form>
                         </div>
                     </div>
                 </li>
-            <% }); %>
+            <% }) %>
         <% } else { %>
             <li class="list-group-item">No contacts available.</li>
         <% } %>
@@ -116,13 +137,27 @@
         form.style.display = "none"; // Sembunyikan form
     }
 
+    function searchContacts() { // Fungsi untuk mencari kontak berdasarkan nama atau telepon
+        const searchValue = document.getElementById("searchInput").value.toLowerCase();
+        const contactList = document.getElementById("contactList");
+        const contacts = contactList.getElementsByTagName("li");
 
-    
-    function validateContactForm(event, nameFieldId, phoneFieldId, emailFieldId) { // Fungsi untuk memvalidasi form kontak
-        const nameInput = document.getElementById(nameFieldId); // Ambil elemen input nama
-        const phoneInput = document.getElementById(phoneFieldId); // Ambil elemen input telepon
-        const emailInput = document.getElementById(emailFieldId); // Ambil elemen input email
-        
+        for (let i = 0; i < contacts.length; i++) {
+            const name = contacts[i].getElementsByTagName("span")[0].innerText.toLowerCase(); // Ambil nama kontak
+            const phone = contacts[i].getElementsByTagName("span")[1].innerText.toLowerCase(); // Ambil telepon kontak
+
+            if (name.includes(searchValue) || phone.includes(searchValue)) {
+                contacts[i].style.display = ""; // Tampilkan kontak jika cocok
+            } else {
+                contacts[i].style.display = "none"; // Sembunyikan kontak jika tidak cocok
+            }
+        }
+    }
+
+    function validateContactForm(event, nameFieldId, phoneFieldId, emailFieldId) { // Fungsi untuk validasi form kontak
+        const nameInput = document.getElementById(nameFieldId); // Ambil input nama
+        const phoneInput = document.getElementById(phoneFieldId); // Ambil input telepon
+        const emailInput = document.getElementById(emailFieldId); // Ambil input email
         const nameError = document.getElementById("nameError" + (nameFieldId.includes("new") ? "" : nameFieldId.substring(nameFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk nama
         const phoneError = document.getElementById("phoneError" + (phoneFieldId.includes("new") ? "" : phoneFieldId.substring(phoneFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk telepon
         const emailError = document.getElementById("emailError" + (emailFieldId.includes("new") ? "" : emailFieldId.substring(emailFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk email
