@@ -11,36 +11,35 @@
     <button id="toggleContactButton" onclick="toggleAddContactForm()" class="btn btn-primary mb-3">Add Contact</button>
     
     <!-- Form tambah kontak yang disembunyikan secara default -->
-    <!-- Form tambah kontak yang disembunyikan secara default -->
-<div id="addContactForm" style="display: none; margin-bottom: 20px;">
-    <form id="contactForm" onsubmit="return submitContactForm(event)">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="mb-3">
-                    <label for="newName">Name:</label>
-                    <input type="text" id="newName" name="name" class="form-control" required>
-                    <div id="nameError" class="text-danger" style="display: none;">Name must contain only letters.</div>
+    <div id="addContactForm" style="display: none; margin-bottom: 20px;">
+        <form id="contactForm" onsubmit="return submitContactForm(event)">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="newName">Name:</label>
+                        <input type="text" id="newName" name="name" class="form-control" required>
+                        <div id="nameError" class="text-danger" style="display: none;">Name must contain only letters.</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="newPhone">Phone:</label>
+                        <input type="text" id="newPhone" name="phone" class="form-control" required>
+                        <div id="phoneError" class="text-danger" style="display: none;">Phone number is not valid.</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="newEmail">Email:</label>
+                        <input type="email" id="newEmail" name="email" class="form-control">
+                        <div id="emailError" class="text-danger" style="display: none;">Email is not valid.</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="mb-3">
-                    <label for="newPhone">Phone:</label>
-                    <input type="text" id="newPhone" name="phone" class="form-control" required>
-                    <div id="phoneError" class="text-danger" style="display: none;">Phone number is not valid.</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="mb-3">
-                    <label for="newEmail">Email:</label>
-                    <input type="email" id="newEmail" name="email" class="form-control">
-                    <div id="emailError" class="text-danger" style="display: none;">Email is not valid.</div>
-                </div>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-success">Save</button>
-        <button type="button" class="btn btn-secondary" onclick="toggleAddContactForm()">Cancel</button>
-    </form>
-</div>
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" class="btn btn-secondary" onclick="toggleAddContactForm()">Cancel</button>
+        </form>
+    </div>
 
     <!-- Daftar kontak -->
     <ul id="contactList" class="list-group">
@@ -58,15 +57,16 @@
                         <div style="flex-shrink: 0; display: flex; gap: 5px;">
                             <button onclick="toggleDetails('details<%= index %>')" class="btn btn-info btn-sm">Detail</button>
                             <button onclick="showUpdateForm(<%= index %>)" class="btn btn-warning btn-sm">Update</button>
-                            <form action="/delete-contact" method="POST" style="display:inline;" onsubmit="return confirmDelete()">
-                                <input type="hidden" name="index" value="<%= index %>">
+                            <form action="/delete-contact" method="POST" onsubmit="return confirm('Are you sure you want to delete this contact?');">
+                                <input type="hidden" name="name" value="<%= contact.name %>">
+                                <input type="hidden" name="phone" value="<%= contact.phone %>">
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </div>
                     </div>
                     <div id="updateForm<%= index %>" style="display: none; margin-top: 10px;">
                         <div style="display: flex; align-items: center;">
-                            <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;" onsubmit="return validateContactForm(event, 'name<%= index %>', 'phone<%= index %>', 'email<%= index %>')">
+                            <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;">
                                 <input type="hidden" name="index" value="<%= index %>">
                                 <div class="row">
                                     <div class="col-md-4">
@@ -105,61 +105,56 @@
 </main>
 
 <script>
-    // Fungsi untuk menampilkan/membatalkan form tambah kontak
     function toggleAddContactForm() {
         var form = document.getElementById("addContactForm");
         var button = document.getElementById("toggleContactButton");
 
         if (form.style.display === "none" || form.style.display === "") {
-            form.style.display = "block"; // Tampilkan form
-            button.textContent = "Hide Add Contact"; // Ubah teks tombol menjadi "Hide Contact"
+            form.style.display = "block";
+            button.textContent = "Hide Add Contact";
         } else {
-            form.style.display = "none"; // Sembunyikan form
-            button.textContent = "Add Contact"; // Kembalikan teks tombol menjadi "Add Contact"
+            form.style.display = "none";
+            button.textContent = "Add Contact";
         }
     }
 
-    function confirmDelete() {
-        return confirm("Are you sure you want to delete this contact?");
-    }
-
-    function toggleDetails(detailId) { // Fungsi untuk menampilkan/menyembunyikan detail kontak
+    function toggleDetails(detailId) {
         var details = document.getElementById(detailId);
-        details.style.display = details.style.display === "none" || details.style.display === "" ? "block" : "none"; // Toggle detail
+        details.style.display = details.style.display === "none" || details.style.display === "" ? "block" : "none";
     }
 
-    function showUpdateForm(index) { // Fungsi untuk menampilkan form update kontak
+    function showUpdateForm(index) {
         var form = document.getElementById("updateForm" + index);
-        form.style.display = form.style.display === "none" || form.style.display === "" ? "block" : "none"; // Toggle form update
+        form.style.display = form.style.display === "none" || form.style.display === "" ? "block" : "none";
     }
 
-    function hideUpdateForm(index) { // Fungsi untuk menyembunyikan form update kontak
+    function hideUpdateForm(index) {
         var form = document.getElementById("updateForm" + index);
-        form.style.display = "none"; // Sembunyikan form
+        form.style.display = "none";
     }
 
-    function searchContacts() { // Fungsi untuk mencari kontak berdasarkan nama atau telepon
+    function searchContacts() {
         const searchValue = document.getElementById("searchInput").value.toLowerCase();
         const contactList = document.getElementById("contactList");
         const contacts = contactList.getElementsByTagName("li");
 
         for (let i = 0; i < contacts.length; i++) {
-            const name = contacts[i].getElementsByTagName("span")[0].innerText.toLowerCase(); // Ambil nama kontak
-            const phone = contacts[i].getElementsByTagName("span")[1].innerText.toLowerCase(); // Ambil telepon kontak
+            const name = contacts[i].getElementsByTagName("span")[0].innerText.toLowerCase();
+            const phone = contacts[i].getElementsByTagName("span")[1].innerText.toLowerCase();
 
             if (name.includes(searchValue) || phone.includes(searchValue)) {
-                contacts[i].style.display = ""; // Tampilkan kontak jika cocok
+                contacts[i].style.display = "";
             } else {
-                contacts[i].style.display = "none"; // Sembunyikan kontak jika tidak cocok
+                contacts[i].style.display = "none";
             }
         }
     }
 
-    async function submitContactForm(event) { // Fungsi untuk menangani pengiriman form tambah kontak
-        event.preventDefault(); // Cegah reload halaman
+    async function submitContactForm(event) {
+        event.preventDefault();
 
-        const formData = new FormData(document.getElementById('contactForm')); // Ambil data form
-        const data = Object.fromEntries(formData); // Konversi ke format objek
+        const formData = new FormData(document.getElementById('contactForm'));
+        const data = Object.fromEntries(formData);
 
         try {
             const response = await fetch('/add-contact', {
@@ -170,16 +165,16 @@
                 body: JSON.stringify(data),
             });
 
-            const result = await response.json(); // Dapatkan hasil dari server
+            const result = await response.json();
 
             if (response.ok) {
-                alert("Contact added successfully!"); // Tampilkan pesan sukses
-                location.reload(); // Reload halaman untuk menampilkan kontak baru
+                alert("Contact added successfully!");
+                location.reload();
             } else {
-                alert(result.message || "Failed to add contact."); // Tampilkan pesan kesalahan
+                alert(result.message || "Failed to add contact.");
             }
         } catch (error) {
-            alert("Error: " + error.message); // Tampilkan pesan kesalahan jika terjadi
+            alert("Error: " + error.message);
         }
     }
 </script>

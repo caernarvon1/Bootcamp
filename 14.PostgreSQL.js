@@ -50,9 +50,9 @@ app.get("/contact", async (req, res) => {
 // Route untuk menambahkan kontak baru
 app.post('/add-contact', async (req, res) => {
     const newContact = {
-        name: req.body.name,
-        phone: req.body.phone,
-        email: req.body.email || null // Email bisa jadi kosong
+        name: req.body.name.trim(),
+        phone: req.body.phone.trim(),
+        email: req.body.email ? req.body.email.trim() : null // Email bisa jadi kosong
     };
 
     // Validasi nama, phone, dan email
@@ -96,72 +96,72 @@ app.post('/add-contact', async (req, res) => {
     }
 });
 
-// Route untuk menghapus kontak
-app.post('/delete-contact', async (req, res) => {
-    const { name, phone } = req.body; // Ambil name dan phone dari body request
 
-    if (!name || !phone) {
-        return res.status(400).send('Name and phone are required'); // Pastikan name dan phone ada
-    }
+// Update contacts
+app.post('/update-contact', async (req, res) => {
+    const { name, phone, newName, newPhone, newEmail } = req.body;
 
+    const trimmedName = name.trim();
+    const trimmedPhone = phone.trim();
+
+    const updatedContact = {
+        name: newName ? newName.trim() : trimmedName,
+        phone: newPhone ? newPhone.trim() : trimmedPhone,
+        email: newEmail ? newEmail.trim() : null
+    };
+
+    console.log(`Updating contact with Name: ${updatedContact.name}, Phone: ${updatedContact.phone}, Email: ${updatedContact.email}`);
+
+    const errors = [];
+    // Validasi...
+    
     try {
-        await pool.query(`DELETE FROM contacts WHERE name = $1 AND phone = $2`, [name, phone]); // Hapus kontak berdasarkan name dan phone
-        res.redirect('/contact'); // Kembali ke halaman kontak setelah menghapus
+        // Coba update hanya berdasarkan phone
+        const result = await pool.query(
+            `UPDATE contacts SET name = $1, phone = $2, email = $3 WHERE phone = $4 RETURNING *`,
+            [updatedContact.name, updatedContact.phone, updatedContact.email, trimmedPhone]
+        );
+
+        console.log('Update Result:', result.rows); // Logging hasil update
+
+        if (result.rowCount === 0) {
+            return res.status(404).send("Contact not found with the provided phone."); // Jika kontak tidak ditemukan
+        }
+
+        res.redirect('/contact'); // Kembali ke halaman kontak setelah memperbarui
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Error deleting contact."); // Mengembalikan error jika ada
+        res.status(500).send("Error updating contact.");
     }
 });
 
-// Route untuk memperbarui kontak
-app.post('/update-contact', async (req, res) => {
-    const { name, phone, newName, newPhone, newEmail } = req.body; // Ambil name dan phone dari body request
+// Route untuk menghapus kontak
+app.post('/delete-contact', async (req, res) => {
+    const { name, phone } = req.body;
 
     if (!name || !phone) {
-        return res.status(400).send('Name and phone are required'); // Pastikan name dan phone ada
-    }
-
-    const updatedContact = {
-        name: newName || name,
-        phone: newPhone || phone,
-        email: newEmail || null // Email bisa jadi kosong
-    };
-
-    // Validasi nama, phone, dan email
-    const errors = [];
-
-    if (!validator.isAlpha(updatedContact.name.replace(/ /g, ''))) { // Memastikan nama hanya mengandung huruf
-        errors.push("Name must contain only letters.");
-    }
-    if (!validator.isMobilePhone(updatedContact.phone, 'any')) {
-        errors.push("Phone number is not valid.");
-    }
-    if (updatedContact.email && !validator.isEmail(updatedContact.email)) {
-        errors.push("Email is not valid.");
-    }
-
-    if (errors.length > 0) {
-        return res.status(400).send(errors.join(" ")); // Mengembalikan error jika ada
+        return res.status(400).send('Name and phone are required');
     }
 
     try {
         await pool.query(
-            `UPDATE contacts SET name = $1, phone = $2, email = $3 WHERE name = $4 AND phone = $5`,
-            [updatedContact.name, updatedContact.phone, updatedContact.email, name, phone]
+            `DELETE FROM contacts WHERE LOWER(name) = LOWER($1) AND phone = $2`,
+            [name.trim(), phone.trim()]
         );
-        res.redirect('/contact'); // Kembali ke halaman kontak setelah memperbarui
+        res.redirect('/contact'); // Kembali ke halaman kontak setelah menghapus
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Error updating contact."); // Mengembalikan error jika ada
+        res.status(500).send("Error deleting contact.");
     }
 });
 
+
 // Middleware untuk menangani rute yang tidak ada (404)
 app.use((req, res) => {
-    res.status(404).send("Page not found : 404"); // Kirim pesan 404 jika rute tidak ditemukan
+    res.status(404).send("Page not found : 404");
 });
 
 // Menjalankan server pada port yang sudah ditetapkan
 app.listen(port, () => {
-    console.log(`App listening on port ${port}`); // Pesan konsol saat server berjalan
+    console.log(`App listening on port ${port}`);
 });
