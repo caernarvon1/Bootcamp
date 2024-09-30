@@ -58,7 +58,7 @@ app.post('/add-contact', async (req, res) => {
     // Validasi nama, phone, dan email
     const errors = [];
 
-    if (!validator.isAlpha(newContact.name.replace(/ /g, ''))) { // Memastikan nama hanya mengandung huruf
+    if (!validator.isAlpha(newContact.name.replace(/ /g, ''))) {
         errors.push("Name must contain only letters.");
     }
     if (!validator.isMobilePhone(newContact.phone, 'any')) {
@@ -69,18 +69,30 @@ app.post('/add-contact', async (req, res) => {
     }
 
     if (errors.length > 0) {
-        return res.status(400).send(errors.join(" ")); // Mengembalikan error jika ada
+        return res.status(400).json({ message: errors.join(" ") });
     }
 
     try {
-        await pool.query(
+        // Cek apakah phone sudah ada dalam database
+        const result = await pool.query(
+            `SELECT * FROM contacts WHERE phone = $1`,
+            [newContact.phone]
+        );
+        
+        if (result.rows.length > 0) {
+            return res.status(400).json({ message: "Phone number already exists." });
+        }
+
+        // Jika tidak ada duplikasi, tambahkan kontak baru
+        const insertResult = await pool.query(
             `INSERT INTO contacts (name, phone, email) VALUES ($1, $2, $3) RETURNING *`,
             [newContact.name, newContact.phone, newContact.email]
         );
-        res.redirect('/contact'); // Kembali ke halaman kontak setelah menambahkan
+        const addedContact = insertResult.rows[0];
+        res.status(201).json(addedContact);
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Error adding contact."); // Mengembalikan error jika ada
+        res.status(500).json({ message: "Error adding contact." });
     }
 });
 
