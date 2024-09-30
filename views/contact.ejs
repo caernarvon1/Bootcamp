@@ -12,7 +12,7 @@
     
     <!-- Form tambah kontak yang disembunyikan secara default -->
     <div id="addContactForm" style="display: none; margin-bottom: 20px;">
-        <form action="/add-contact" method="POST" onsubmit="return validateContactForm(event, 'newName', 'newPhone', 'newEmail')">
+        <form id="contactForm" onsubmit="return submitContactForm(event)">
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
@@ -154,44 +154,31 @@
         }
     }
 
-    function validateContactForm(event, nameFieldId, phoneFieldId, emailFieldId) { // Fungsi untuk validasi form kontak
-        const nameInput = document.getElementById(nameFieldId); // Ambil input nama
-        const phoneInput = document.getElementById(phoneFieldId); // Ambil input telepon
-        const emailInput = document.getElementById(emailFieldId); // Ambil input email
-        const nameError = document.getElementById("nameError" + (nameFieldId.includes("new") ? "" : nameFieldId.substring(nameFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk nama
-        const phoneError = document.getElementById("phoneError" + (phoneFieldId.includes("new") ? "" : phoneFieldId.substring(phoneFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk telepon
-        const emailError = document.getElementById("emailError" + (emailFieldId.includes("new") ? "" : emailFieldId.substring(emailFieldId.length - 1))); // Ambil elemen pesan kesalahan untuk email
+    async function submitContactForm(event) { // Fungsi untuk menangani pengiriman form tambah kontak
+        event.preventDefault(); // Cegah reload halaman
 
-        // Reset pesan kesalahan
-        nameError.style.display = "none"; 
-        phoneError.style.display = "none";
-        emailError.style.display = "none";
+        const formData = new FormData(document.getElementById('contactForm')); // Ambil data form
+        const data = Object.fromEntries(formData); // Konversi ke format objek
 
-        const nameValue = nameInput.value; // Nilai input nama
-        const phoneValue = phoneInput.value; // Nilai input telepon
-        const emailValue = emailInput.value; // Nilai input email
+        try {
+            const response = await fetch('/add-contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
 
-        // Validasi nama hanya mengandung huruf
-        if (!/^[A-Za-z\s]+$/.test(nameValue)) { // Jika nama tidak valid
-            nameError.style.display = "block"; // Tampilkan pesan kesalahan
-            event.preventDefault(); // Mencegah form submit jika ada kesalahan
-            return false; // Kembali false
+            const result = await response.json(); // Dapatkan hasil dari server
+
+            if (response.ok) {
+                alert("Contact added successfully!"); // Tampilkan pesan sukses
+                location.reload(); // Reload halaman untuk menampilkan kontak baru
+            } else {
+                alert(result.message || "Failed to add contact."); // Tampilkan pesan kesalahan
+            }
+        } catch (error) {
+            alert("Error: " + error.message); // Tampilkan pesan kesalahan jika terjadi
         }
-
-        // Validasi nomor telepon (harus berupa angka dan panjang 10-15)
-        if (!/^\d{10,15}$/.test(phoneValue)) { // Jika nomor telepon tidak valid
-            phoneError.style.display = "block"; // Tampilkan pesan kesalahan
-            event.preventDefault(); // Mencegah form submit jika ada kesalahan
-            return false; // Kembali false
-        }
-
-        // Validasi email (jika diisi)
-        if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) { // Jika email tidak valid
-            emailError.style.display = "block"; // Tampilkan pesan kesalahan
-            event.preventDefault(); // Mencegah form submit jika ada kesalahan
-            return false; // Kembali false
-        }
-
-        return true; // Kembali true jika semua validasi berhasil
     }
 </script>
