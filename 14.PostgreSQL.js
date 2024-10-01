@@ -47,6 +47,7 @@ app.get("/contact", async (req, res) => {
     }
 });
 
+
 // Route untuk menambahkan kontak baru
 app.post('/add-contact', async (req, res) => {
     const newContact = {
@@ -96,36 +97,61 @@ app.post('/add-contact', async (req, res) => {
     }
 });
 
-
 // Update contacts
 app.post('/update-contact', async (req, res) => {
     const { name, phone, newName, newPhone, newEmail } = req.body;
 
+    // Trim semua input untuk menghilangkan spasi tambahan
     const trimmedName = name.trim();
     const trimmedPhone = phone.trim();
+    const trimmedNewEmail = newEmail && newEmail.trim() !== '' ? newEmail.trim() : null;
 
     const updatedContact = {
         name: newName ? newName.trim() : trimmedName,
         phone: newPhone ? newPhone.trim() : trimmedPhone,
-        email: newEmail ? newEmail.trim() : null
+        email: trimmedNewEmail, // Pastikan email diatur dengan benar
     };
 
-    console.log(`Updating contact with Name: ${updatedContact.name}, Phone: ${updatedContact.phone}, Email: ${updatedContact.email}`);
+    console.log(`Updating contact with new Name: ${updatedContact.name}, new Phone: ${updatedContact.phone}, new Email: ${updatedContact.email}`);
 
     const errors = [];
-    // Validasi...
-    
+
+    // Validasi input name, phone, dan email
+    if (!validator.isAlpha(updatedContact.name.replace(/ /g, ''))) {
+        errors.push("Name must contain only letters.");
+    }
+    if (!validator.isMobilePhone(updatedContact.phone, 'any')) {
+        errors.push("Phone number is not valid.");
+    }
+    if (updatedContact.email !== null && !validator.isEmail(updatedContact.email)) {
+        errors.push("Email is not valid.");
+    }
+
+    if (errors.length > 0) {
+        return res.status(400).json({ message: errors.join(" ") });
+    }
+
     try {
-        // Coba update hanya berdasarkan phone
+        // Cek apakah kontak dengan nama atau nomor telepon tersebut ada
+        const checkContact = await pool.query(
+            `SELECT * FROM contacts WHERE phone = $1 OR LOWER(name) = LOWER($2)`,
+            [trimmedPhone, trimmedName]
+        );
+
+        if (checkContact.rows.length === 0) {
+            return res.status(404).send("Contact not found with the provided name or phone.");
+        }
+
+        // Lakukan update jika kontak ditemukan
         const result = await pool.query(
-            `UPDATE contacts SET name = $1, phone = $2, email = $3 WHERE phone = $4 RETURNING *`,
-            [updatedContact.name, updatedContact.phone, updatedContact.email, trimmedPhone]
+            `UPDATE contacts SET name = $1, phone = $2, email = $3 WHERE phone = $4 OR LOWER(name) = LOWER($5) RETURNING *`,
+            [updatedContact.name, updatedContact.phone, updatedContact.email, trimmedPhone, trimmedName]
         );
 
         console.log('Update Result:', result.rows); // Logging hasil update
 
         if (result.rowCount === 0) {
-            return res.status(404).send("Contact not found with the provided phone."); // Jika kontak tidak ditemukan
+            return res.status(404).send("Contact not updated. No changes were made.");
         }
 
         res.redirect('/contact'); // Kembali ke halaman kontak setelah memperbarui
@@ -134,6 +160,7 @@ app.post('/update-contact', async (req, res) => {
         res.status(500).send("Error updating contact.");
     }
 });
+
 
 // Route untuk menghapus kontak
 app.post('/delete-contact', async (req, res) => {
