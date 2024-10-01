@@ -114,15 +114,32 @@ app.post('/update-contact', async (req, res) => {
 
     console.log(`Updating contact with new Name: ${updatedContact.name}, new Phone: ${updatedContact.phone}, new Email: ${updatedContact.email}`);
 
-    // Validasi input name, phone, dan email
+    // Array untuk menyimpan error
+    let errors = [];
+
+    // Validasi input name
     if (!validator.isAlpha(updatedContact.name.replace(/ /g, ''))) {
-        return res.send(`<script>alert("Name must contain only letters."); window.history.back();</script>`);
+        errors.push("Name must contain only letters.");
     }
+    
+    // Validasi input phone
     if (!validator.isMobilePhone(updatedContact.phone, 'any')) {
-        return res.send(`<script>alert("Phone number is not valid."); window.history.back();</script>`);
+        errors.push("Phone number is not valid.");
     }
+
+    // Validasi input email (opsional)
     if (updatedContact.email !== null && !validator.isEmail(updatedContact.email)) {
-        return res.send(`<script>alert("Email is not valid."); window.history.back();</script>`);
+        errors.push("Email is not valid.");
+    }
+
+    // Jika ada error, kirim pesan kesalahan kembali
+    if (errors.length > 0) {
+        return res.send(`
+            <script>
+                alert("${errors.join('\\n')}");
+                window.history.back();
+            </script>
+        `);
     }
 
     try {
