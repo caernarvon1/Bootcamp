@@ -114,21 +114,15 @@ app.post('/update-contact', async (req, res) => {
 
     console.log(`Updating contact with new Name: ${updatedContact.name}, new Phone: ${updatedContact.phone}, new Email: ${updatedContact.email}`);
 
-    const errors = [];
-
     // Validasi input name, phone, dan email
     if (!validator.isAlpha(updatedContact.name.replace(/ /g, ''))) {
-        errors.push("Name must contain only letters.");
+        return res.send(`<script>alert("Name must contain only letters."); window.history.back();</script>`);
     }
     if (!validator.isMobilePhone(updatedContact.phone, 'any')) {
-        errors.push("Phone number is not valid.");
+        return res.send(`<script>alert("Phone number is not valid."); window.history.back();</script>`);
     }
     if (updatedContact.email !== null && !validator.isEmail(updatedContact.email)) {
-        errors.push("Email is not valid.");
-    }
-
-    if (errors.length > 0) {
-        return res.status(400).json({ message: errors.join(" ") });
+        return res.send(`<script>alert("Email is not valid."); window.history.back();</script>`);
     }
 
     try {
@@ -139,7 +133,7 @@ app.post('/update-contact', async (req, res) => {
         );
 
         if (checkContact.rows.length === 0) {
-            return res.status(404).send("Contact not found with the provided name or phone.");
+            return res.send(`<script>alert("Contact not found with the provided name or phone."); window.history.back();</script>`);
         }
 
         // Lakukan update jika kontak ditemukan
@@ -151,13 +145,13 @@ app.post('/update-contact', async (req, res) => {
         console.log('Update Result:', result.rows); // Logging hasil update
 
         if (result.rowCount === 0) {
-            return res.status(404).send("Contact not updated. No changes were made.");
+            return res.send(`<script>alert("Contact not updated. No changes were made."); window.history.back();</script>`);
         }
 
         res.redirect('/contact'); // Kembali ke halaman kontak setelah memperbarui
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Error updating contact.");
+        res.send(`<script>alert("Error updating contact."); window.history.back();</script>`);
     }
 });
 
