@@ -41,67 +41,70 @@
         </form>
     </div>
 
-    <!-- Daftar kontak -->
-    <ul id="contactList" class="list-group">
-        <% if (contacts && contacts.length > 0) { %>
-            <% contacts.forEach((contact, index) => { %>
-                <li class="list-group-item">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="flex: 1; margin-right: 20px;">
-                            <div><strong>Name:</strong> <span><%= contact.name %></span></div>
-                            <div><strong>Phone:</strong> <span><%= contact.phone %></span></div>
-                            <div id="details<%= index %>" style="display: none;">
-                                <strong>Email:</strong> <span><%= contact.email || 'tidak tersedia' %></span>
-                            </div>
-                        </div>
-                        <div style="flex-shrink: 0; display: flex; gap: 5px;">
-                            <button onclick="toggleDetails('details<%= index %>')" class="btn btn-info btn-sm">Detail</button>
-                            <button onclick="showUpdateForm(<%= index %>)" class="btn btn-warning btn-sm">Update</button>
-                            <form action="/delete-contact" method="POST" onsubmit="return confirm('Are you sure you want to delete this contact?');">
-                                <input type="hidden" name="name" value="<%= contact.name %>">
-                                <input type="hidden" name="phone" value="<%= contact.phone %>">
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
+<!-- Daftar kontak -->
+<ul id="contactList" class="list-group">
+    <% if (contacts && contacts.length > 0) { %>
+        <% contacts.forEach((contact, index) => { %>
+            <li class="list-group-item">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 0 0 50px; text-align: center; margin-right: 20px; border-right: 1px solid #ccc; padding-right: 10px; height: 60px; display: flex; align-items: center; justify-content: center;"> <!-- Menambahkan flexbox untuk memusatkan nomor -->
+                        <strong><%= index + 1 %></strong> <!-- Menampilkan nomor urut -->
+                    </div>
+                    <div style="flex: 1; margin-right: 20px;">
+                        <div><strong>Name:</strong> <span><%= contact.name %></span></div>
+                        <div><strong>Phone:</strong> <span><%= contact.phone %></span></div>
+                        <div id="details<%= index %>" style="display: none;">
+                            <strong>Email:</strong> <span><%= contact.email || 'tidak tersedia' %></span>
                         </div>
                     </div>
-                    <div id="updateForm<%= index %>" style="display: none; margin-top: 10px;">
-                        <div style="display: flex; align-items: center;">
-                            <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;">
-                                <input type="hidden" name="index" value="<%= index %>">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="name<%= index %>">Name:</label>
-                                            <input type="text" id="name<%= index %>" name="name" class="form-control" value="<%= contact.name %>" required>
-                                            <div id="nameError<%= index %>" class="text-danger" style="display: none;">Name must contain only letters.</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="phone<%= index %>">Phone:</label>
-                                            <input type="text" id="phone<%= index %>" name="phone" class="form-control" value="<%= contact.phone %>" required>
-                                            <div id="phoneError<%= index %>" class="text-danger" style="display: none;">Phone number is not valid.</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="email<%= index %>">Email:</label>
-                                            <input type="email" id="email<%= index %>" name="newEmail" class="form-control" value="<%= contact.email || '' %>">
-                                            <div id="emailError<%= index %>" class="text-danger" style="display: none;">Email is not valid.</div>
-                                        </div>
+                    <div style="flex-shrink: 0; display: flex; gap: 5px;">
+                        <button onclick="toggleDetails('details<%= index %>')" class="btn btn-info btn-sm">Detail</button>
+                        <button onclick="showUpdateForm(<%= index %>)" class="btn btn-warning btn-sm">Update</button>
+                        <form action="/delete-contact" method="POST" onsubmit="return confirm('Are you sure you want to delete this contact?');">
+                            <input type="hidden" name="name" value="<%= contact.name %>">
+                            <input type="hidden" name="phone" value="<%= contact.phone %>">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                <div id="updateForm<%= index %>" style="display: none; margin-top: 10px;">
+                    <div style="display: flex; align-items: center;">
+                        <form action="/update-contact" method="POST" style="flex: 1; margin-right: 20px;">
+                            <input type="hidden" name="index" value="<%= index %>">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="name<%= index %>">Name:</label>
+                                        <input type="text" id="name<%= index %>" name="name" class="form-control" value="<%= contact.name %>" required>
+                                        <div id="nameError<%= index %>" class="text-danger" style="display: none;">Name must contain only letters.</div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-success btn-sm">Save</button>
-                                <button type="button" class="btn btn-secondary btn-sm" onclick="hideUpdateForm(<%= index %>)">Cancel</button>
-                            </form>
-                        </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="phone<%= index %>">Phone:</label>
+                                        <input type="text" id="phone<%= index %>" name="phone" class="form-control" value="<%= contact.phone %>" required>
+                                        <div id="phoneError<%= index %>" class="text-danger" style="display: none;">Phone number is not valid.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="email<%= index %>">Email:</label>
+                                        <input type="email" id="email<%= index %>" name="newEmail" class="form-control" value="<%= contact.email || '' %>">
+                                        <div id="emailError<%= index %>" class="text-danger" style="display: none;">Email is not valid.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm">Save</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="hideUpdateForm(<%= index %>)">Cancel</button>
+                        </form>
                     </div>
-                </li>
-            <% }) %>
-        <% } else { %>
-            <li class="list-group-item">No contacts available.</li>
-        <% } %>
-    </ul>
+                </div>
+            </li>
+        <% }) %>
+    <% } else { %>
+        <li class="list-group-item">No contacts available.</li>
+    <% } %>
+</ul>
 </main>
 
 <script>

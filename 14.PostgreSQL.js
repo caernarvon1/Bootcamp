@@ -8,6 +8,9 @@ const port = 3000; // Menentukan port yang akan digunakan oleh server
 
 const pool = require("./db.js");
 
+// Menggunakan middleware 'express.static' untuk menyajikan file statis dari folder 'images'
+app.use(express.static('images'));
+
 app.set("view engine", "ejs"); // Mengatur template engine menjadi EJS untuk rendering halaman
 app.set("views", path.join(__dirname, "views")); // Mengatur direktori views
 
@@ -47,7 +50,6 @@ app.get("/contact", async (req, res) => {
     }
 });
 
-
 // Route untuk menambahkan kontak baru
 app.post('/add-contact', async (req, res) => {
     const newContact = {
@@ -74,14 +76,14 @@ app.post('/add-contact', async (req, res) => {
     }
 
     try {
-        // Cek apakah phone sudah ada dalam database
+        // Cek apakah sudah ada kontak dengan name, phone, atau email yang sama
         const result = await pool.query(
-            `SELECT * FROM contacts WHERE phone = $1`,
-            [newContact.phone]
+            `SELECT * FROM contacts WHERE phone = $1 OR LOWER(name) = LOWER($2) OR LOWER(email) = LOWER($3)`,
+            [newContact.phone, newContact.name, newContact.email]
         );
-        
+
         if (result.rows.length > 0) {
-            return res.status(400).json({ message: "Phone number already exists." });
+            return res.status(400).json({ message: "Data telah tersedia." });
         }
 
         // Jika tidak ada duplikasi, tambahkan kontak baru
@@ -89,6 +91,7 @@ app.post('/add-contact', async (req, res) => {
             `INSERT INTO contacts (name, phone, email) VALUES ($1, $2, $3) RETURNING *`,
             [newContact.name, newContact.phone, newContact.email]
         );
+
         const addedContact = insertResult.rows[0];
         res.status(201).json(addedContact);
     } catch (error) {
@@ -96,6 +99,7 @@ app.post('/add-contact', async (req, res) => {
         res.status(500).json({ message: "Error adding contact." });
     }
 });
+
 
 // Update contacts
 app.post('/update-contact', async (req, res) => {
